@@ -1,6 +1,6 @@
 # make user
 - name: Add {{ item }} user
-  user: name={{ item }} groups=wheel state=present
+  user: name={{ item }} groups=wheel state=present shell=/bin/bash
 
 - name: Configure {{ item }} user directory
   file: path=/home/{{ item }} owner={{ item }} group=users mode=0755
