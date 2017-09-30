@@ -1,0 +1,10 @@
+---
+# This playbook deploys the whole application stack in this site.
+
+- name: Make Users
+  hosts: vagrant
+  become: yes
+
+  roles:
+    - make_user
+

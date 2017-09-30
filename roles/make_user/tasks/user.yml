@@ -1,0 +1,17 @@
+# make user
+- name: Add {{ item }} user
+  user: name={{ item }} groups=wheel state=present
+
+- name: Configure {{ item }} user directory
+  file: path=/home/{{ item }} owner={{ item }} group=users mode=0755
+
+- name: Make directory {{ item }} .ssh
+  file: dest=/home/{{ item }}/.ssh/ state=directory owner={{ item }} group=users mode=700
+
+- name: Make directory {{ item }} .ssh/authorized_keys
+  file: dest=/home/{{ item }}/.ssh/authorized_keys state=touch owner={{ item }} group=users mode=600
+
+- name: Configure {{ item }} authorized_keys
+  template: >
+   src=./../templates/{{ item }}.pub
+   dest=/home/{{ item }}/.ssh/authorized_keys owner={{ item }} group=users mode=600

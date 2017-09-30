@@ -1,0 +1,181 @@
+---
+- name: Disable SELinux
+  selinux: state=disabled
+
+- name: Configure sudoers
+  copy: >
+   src=./../templates/sudoers
+   dest=/etc/sudoers
+     owner=root
+     group=root
+     mode=0440
+
+- name: Change timezone to Asia/Tokyo
+  shell: timedatectl set-timezone Asia/Tokyo
+
+- name: Install epel-release
+  yum: name=epel-release state=present
+
+- name: Check installed Remi Repository
+  shell: rpm -qa remi-release
+  register: check_remi_release
+
+- name: Add Remi Repository
+  command: rpm -ivh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+  when: check_remi_release == ""
+
+- name: add RPMforge Repository
+  yum: name=http://ftp.riken.jp/Linux/repoforge/redhat/el7/en/x86_64/rpmforge/RPMS/rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm state=present
+
+- name: Install git
+  yum: name=git state=present
+
+- name: Install gcc-c++
+  yum: name=gcc-c++ state=present
+
+- name: Install vim
+  yum: name=vim state=present
+
+- name: Install wget
+  yum: name=wget state=present
+
+- name: Install telnet
+  yum: name=telnet state=present
+
+- name: Install nginx
+  yum: name=nginx state=present
+
+- name: Install php
+  yum: name=php state=present enablerepo=remi-php71
+
+- name: Install php-fpm
+  yum: name=php-fpm state=present enablerepo=remi-php71
+
+- name: Install php-mbstring
+  yum: name=php-mbstring state=present enablerepo=remi-php71
+
+- name: Install php-pear
+  yum: name=php-pear state=present enablerepo=remi-php71
+
+- name: Install php-apcu
+  yum: name=php-apcu state=present enablerepo=remi-php71
+
+- name: Install php-cli
+  yum: name=php-cli state=present enablerepo=remi-php71
+
+- name: Install php-gd
+  yum: name=php-gd state=present enablerepo=remi-php71
+
+- name: Install php-json
+  yum: name=php-json state=present enablerepo=remi-php71
+
+- name: Install php-memcached
+  yum: name=php-memcached state=present enablerepo=remi-php71
+
+- name: Install php-xml
+  yum: name=php-xml state=present enablerepo=remi-php71
+
+- name: Install php-xmlrpc
+  yum: name=php-xmlrpc state=present enablerepo=remi-php71
+
+- name: Install php-tidy
+  yum: name=php-tidy state=present enablerepo=remi-php71
+
+- name: Install php-soap
+  yum: name=php-soap state=present enablerepo=remi-php71
+
+- name: Install php-snmp
+  yum: name=php-snmp state=present enablerepo=remi-php71
+
+- name: Install php-zip
+  yum: name=php-zip state=present enablerepo=remi-php71
+
+- name: Install php-redis
+  yum: name=php-zip state=present enablerepo=remi-php71
+
+- name: Install php-oauth
+  yum: name=php-oauth state=present enablerepo=remi-php71
+
+- name: Install php-mysql
+  yum: name=php-mysql state=present enablerepo=remi-php71
+
+- name: Install php-imagick
+  yum: name=php-imagick state=present enablerepo=remi-php71
+
+- name: Install php-pdo
+  yum: name=php-pdo state=present enablerepo=remi-php71
+
+- name: Install php-pdo
+  yum: name=php-pdo state=present enablerepo=remi-php71
+
+- name: Install php-aws-sdk
+  yum: name=php-aws-sdk state=present enablerepo=remi-php71
+
+- name: install composer
+  become: true
+  shell: curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin && mv /usr/bin/composer.phar /usr/bin/composer
+         creates=/usr/bin/composer
+
+- name: php-fpm restart and register service
+  service: name=php-fpm state=restarted enabled=yes
+
+- name: nginx restart and register service
+  service: name=nginx state=restarted enabled=yes
+#
+# MySQL 5.6 
+#
+
+- name:  レポジトリの登録
+  yum:
+    name: http://dev.mysql.com/get/mysql57-community-release-el7-7.noarch.rpm
+    state: present
+
+- name: mysqld のインストール
+  yum:
+    name: "{{ item }}"
+    enablerepo: mysql56-community
+    disablerepo: mysql57-community
+    state: present
+  with_items:
+    - mysql-community-server
+    - mysql-community-client
+    - mysql-community-common
+    - mysql-community-libs
+
+- name: Configure mysql my.cnf
+  copy: >
+   src=./../templates/my.cnf
+   dest=/etc/my.cnf
+
+- name: mysqld 起動・自動起動設定
+  service:
+    name=mysqld
+    state=started
+    enabled=yes
+
+- name: Ansible 用 mysql モジュールで必要なパッケージのインストール
+  yum:
+    name: MySQL-python
+    state: present
+
+#
+# memcached
+#
+
+- name: Install memcached
+  yum: name=memcached state=present
+
+- name: memcached restart and register service
+  service: name=memcached state=restarted enabled=yes
+
+#
+# npm
+#
+- name: Install npm
+  yum: name=npm state=present
+
+- name: Install gulp
+  npm:
+    name: gulp
+    global: yes
+

@@ -1,0 +1,6 @@
+phing: https://www.phing.info/get/phing-latest.phar
+phpunit: https://phar.phpunit.de/phpunit.phar
+phpmd: http://static.phpmd.org/php/latest/phpmd.phar
+phpcs: https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
+php_cs_fixer: https://github.com/FriendsOfPHP/PHP-CS-Fixer/releases/download/v1.12.0/php-cs-fixer.phar
+phpcpd: https://phar.phpunit.de/phpcpd-2.0.4.phar

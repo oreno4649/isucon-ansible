@@ -1,0 +1,37 @@
+   - name: Get jenkins yum repository
+     yum_repository:
+       name: jenkins
+       description: jenkins yum repo
+       baseurl: http://pkg.jenkins-ci.org/redhat-stable/
+
+   - name: Install jenkins-ci.org.key
+     rpm_key:
+       key: http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key
+
+   - name: Install Jenkins
+     yum: name=jenkins state=present
+
+   - name: Start Jenkins service
+     service: name=jenkins state=started
+
+   - name: Jenkins auto boot
+     command: chkconfig jenkins on
+
+   - name: Configure jenkins.conf
+     copy: >
+      src=./templates/jenkins.conf
+      dest=/etc/httpd/conf.d/jenkins.conf
+        owner=root
+        group=root
+        mode=0644
+
+   - name: Configure config.xml
+     copy: >
+      src=./templates/config.xml
+      dest=/var/lib/jenkins/config.xml
+        owner=jenkins
+        group=jenkins
+        mode=0644
+
+   - name: Restart Jenkins service
+     service: name=jenkins state=restarted
